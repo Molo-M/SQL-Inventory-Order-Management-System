@@ -106,7 +106,7 @@ BEGIN
              TotalAmount, Status)
         VALUES
             (@CustomerID, @SubtotalAmount, @DiscountAmount,
-             @TotalAmount, N'Pending');
+             @TotalAmount, N'Completed');
 
         -- d) What OrderID did SQL Server just give the order I inserted above?
         SET @OrderID = SCOPE_IDENTITY();
