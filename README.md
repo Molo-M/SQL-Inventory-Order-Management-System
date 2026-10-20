@@ -1,14 +1,88 @@
 # Inventory and Order Management System
 
----
 
 ## Project Overview: Problem Statement
 
+
 You are tasked with designing and implementing a database-driven system to manage the inventory and orders for an e-commerce company. The system needs to handle product information, customer data, and order processing efficiently while ensuring that stock levels are properly updated when orders are placed. Additionally, the company wants to track all inventory changes and streamline processes related to stock replenishment.
 
-The system should provide insights into customer purchase behaviors, monitor stock levels, and ensure that products are always available for sale. Your solution should support day-to-day operations such as placing orders, updating inventory, and summarizing important business metrics like order summaries and customer spending.
+---
+
+## ERD Diagram
+
+![erd diagram showing table relationships](erd_diagram.png)
 
 ---
+
+## Tools and Technologies
+
+The project was implemented using the following tools and technologies:
+
+- **Microsoft SQL Server Express:** Used as the relational database management system to store and manage customers, products, orders, order details, and inventory logs.
+- **SQL Server Management Studio (SSMS):** Used to create and manage the database, execute SQL scripts, implement stored procedures and views, and test the system's functionality.
+- **Transact-SQL (T-SQL):** Used to define the database schema, enforce data integrity, process orders, calculate bulk discounts, update stock levels, record inventory changes, and generate reports.
+- **Visual Studio Code (VS Code):** Used to organize and edit the SQL scripts and project documentation.
+- **Git and GitHub:** Used for version control, tracking changes, and hosting the project repository.
+
+---
+
+## Project Structure
+
+The repository is organized into folders to separate database design, sample data, stored procedures, and reporting scripts.
+
+```text
+SQL-Inventory-Order-Management/
+│
+├── 01_database_design/
+│   └── 01_create_schema.sql
+│
+├── 02_sample_data/
+│   └── 01_insert_sample_data.sql
+│
+├── 03_stored_procedures/
+│   ├── 01_place_order.sql
+│   ├── 02_test_place_order.sql
+│   ├── 03_replenish_stock.sql
+│   └── 04_test_replenishment.sql
+│
+├── 04_reporting/
+│   ├── 01_order_summary.sql
+│   ├── 02_low_stock_report.sql
+│   ├── 03_customer_spending_tiers.sql
+│   └── 04_create_views.sql
+│
+├── erd_diagram.png
+└── README.md
+```
+
+### Folder and File Descriptions
+
+**`01_database_design/`**
+
+- `01_create_schema.sql`: Creates the database and defines the five tables, their relationships, and data integrity constraints.
+
+**`02_sample_data/`**
+
+- `01_insert_sample_data.sql`: Inserts sample customer, product, and initial inventory data for testing the system.
+
+**`03_stored_procedures/`**
+
+- `01_place_order.sql`: Defines the `PlaceOrder` stored procedure, which validates orders, calculates totals and bulk discounts, deducts stock, and records inventory changes.
+- `02_test_place_order.sql`: Demonstrates and tests the order placement procedure.
+- `03_replenish_stock.sql`: Defines the `ReplenishStock` stored procedure for increasing product stock and recording replenishment activity.
+- `04_test_replenishment.sql`: Tests stock replenishment and verifies the resulting inventory changes.
+
+**`04_reporting/`**
+
+- `01_order_summary.sql`: Retrieves order summaries, including customer names, order dates, totals, and quantities ordered.
+- `02_low_stock_report.sql`: Identifies products whose stock levels have fallen below their reorder levels.
+- `03_customer_spending_tiers.sql`: Calculates customer spending and categorizes customers into Bronze, Silver, and Gold tiers.
+- `04_create_views.sql`: Creates reusable views for order summaries and low-stock products.
+
+**Root files**
+
+- `erd_diagram.png`: Entity Relationship Diagram (ERD) illustrating the database tables and their relationships.
+- `README.md`: Documents the project objectives, technologies, database design, implementation, and deliverables.
 
 ## Project Objectives
 
