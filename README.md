@@ -51,6 +51,9 @@ SQL-Inventory-Order-Management/
 │   ├── 03_customer_spending_tiers.sql
 │   └── 04_create_views.sql
 │
+├── 05_triggers/
+│   └── 01_log_initial_stock_trigger.sql
+│
 ├── erd_diagram.png
 └── README.md
 ```
@@ -78,6 +81,10 @@ SQL-Inventory-Order-Management/
 - `02_low_stock_report.sql`: Identifies products whose stock levels have fallen below their reorder levels.
 - `03_customer_spending_tiers.sql`: Calculates customer spending and categorizes customers into Bronze, Silver, and Gold tiers.
 - `04_create_views.sql`: Creates reusable views for order summaries and low-stock products.
+
+**`05_triggers/`**
+
+- `01_log_initial_stock_trigger.sql`: Updates the inventory log after adding product to the stock.
 
 **Root files**
 
