@@ -1,8 +1,10 @@
-
 -- =====================================================
 -- Inventory and Order Management System
 -- Phase 1: Sample Data to test order processing
 -- =====================================================
+-- The initial stock of each product is logged automatically by the
+-- trigger dbo.trg_LogInitialProductStock (01_database_design/03_log_initial_stock_trigger.sql),
+-- so this script only needs to insert the customers and products.
 
 USE InventoryOrderManagement;
 GO
@@ -33,21 +35,9 @@ WHERE NOT EXISTS
 );
 GO
 
--- 2. Prepare a record of products inserted by this script
-DECLARE @NewProducts TABLE  -- this creates temporary table to store product IDs and stock quantity
-(
-    ProductID INT,
-    StockQuantity INT
-);
-
--- 3. Insert sample products
+-- 2. Insert sample products
 INSERT INTO dbo.Products
     (ProductName, Category, Price, StockQuantity, ReorderLevel)
--- output the inserted product ids and stock quantities into the temporary "@NewProducts" table.
-OUTPUT
-    inserted.ProductID,
-    inserted.StockQuantity
-INTO @NewProducts (ProductID, StockQuantity)
 -- Created temporary "source" table to store inserted data
 SELECT
     source.ProductName,
@@ -67,7 +57,7 @@ FROM
         (N'Webcam HD', N'Electronics', 65.00, 3, 5),
         (N'Headphones', N'Audio', 75.00, 0, 10)
 ) AS source(ProductName, Category, Price, StockQuantity, ReorderLevel)
--- Compare temporary "source" values with "Products" table values 
+-- Compare temporary "source" values with "Products" table values
 WHERE NOT EXISTS
 (
     SELECT 1
@@ -75,21 +65,16 @@ WHERE NOT EXISTS
     WHERE existing.ProductName = source.ProductName
       AND existing.Category = source.Category
 );
+GO
 
--- 4. Log the initial stock of newly inserted products
--- Zero-stock products are skipped because the log constraint
--- does not allow QuantityChanged = 0.
-
-INSERT INTO dbo.InventoryLogs
-    (ProductID, OrderID, QuantityChanged, ChangeType, Notes)
--- Select the "ProductID" and "StockQuantity" values in the table variable (@NewProducts)
--- and save them into the "InventoryLogs" table
+-- 3. Check that the trigger logged the initial stock
 SELECT
-    ProductID,
-    NULL,
-    StockQuantity,
-    N'InitialStock',
-    N'Initial stock loaded during sample data setup'
-FROM @NewProducts
-WHERE StockQuantity > 0;
+    p.ProductName,
+    l.QuantityChanged,
+    l.ChangeType,
+    l.Notes
+FROM dbo.InventoryLogs AS l
+INNER JOIN dbo.Products AS p
+    ON l.ProductID = p.ProductID
+ORDER BY l.InventoryLogID;
 GO
