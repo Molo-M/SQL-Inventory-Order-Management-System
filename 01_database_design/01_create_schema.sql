@@ -1,4 +1,3 @@
-
 -- =====================================================
 -- Inventory and Order Management System
 -- Phase 1: Database Schema
@@ -14,6 +13,18 @@ GO
 
 -- Enter database
 USE InventoryOrderManagement;
+GO
+
+-- Start fresh so this script can be run more than once.
+-- Tables are dropped in reverse dependency order (child tables first),
+-- because a table can't be dropped while another table's foreign key points to it.
+-- WARNING: this deletes all existing data in these tables.
+DROP TABLE IF EXISTS
+    dbo.InventoryLogs,
+    dbo.OrderDetails,
+    dbo.Orders,
+    dbo.Products,
+    dbo.Customers;
 GO
 
 -- 2. Create Customers table --------------------------------------------------------------------------------
