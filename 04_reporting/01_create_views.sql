@@ -1,11 +1,17 @@
+-- =====================================================
+-- Inventory and Order Management System
+-- Phase 5: Views to simplify data access
+-- =====================================================
+-- The report scripts in this folder read from these views,
+-- so each piece of logic (e.g. the tier thresholds) lives in one place.
 
--- Use our desired warehouse
 USE InventoryOrderManagement;
 GO
 
 -- =====================================================
 -- 1. View: Order Summary
 -- =====================================================
+-- One row per order: customer name, order date, total amount and number of items
 
 CREATE OR ALTER VIEW dbo.vw_OrderSummary
 AS
@@ -33,24 +39,32 @@ GO
 -- =====================================================
 -- 2. View: Low Stock Products
 -- =====================================================
+-- Products whose stock is below their reorder level, and how many units
+-- are needed to reach the reorder level
 
 CREATE OR ALTER VIEW dbo.vw_LowStockProducts
 AS
--- Report to check for products that are below their reorder level
-SELECT 
-    ProductName, 
-    Category, 
-    Price, 
-    StockQuantity, 
-    ReorderLevel, 
+SELECT
+    ProductID,
+    ProductName,
+    Category,
+    Price,
+    StockQuantity,
+    ReorderLevel,
     (ReorderLevel - StockQuantity) AS QuantityNeeded
 FROM dbo.Products
-WHERE StockQuantity < ReorderLevel
+WHERE StockQuantity < ReorderLevel;
 GO
 
 -- =====================================================
 -- 3. View: Customer Spending & Tier Level
 -- =====================================================
+-- Total spending per customer and their tier:
+--   Gold   = 200 or more
+--   Silver = 100 to 199.99
+--   Bronze = below 100 (including customers with no orders)
+-- Because the tier is calculated in a view, it updates automatically
+-- every time a customer places an order.
 
 CREATE OR ALTER VIEW dbo.vw_CustomerSpending
 AS
@@ -68,7 +82,8 @@ SELECT
 FROM dbo.Customers AS c
 LEFT JOIN dbo.Orders AS o
     ON c.CustomerID = o.CustomerID
+    AND o.Status = N'Completed'   -- only completed orders count towards spending
 GROUP BY
     c.CustomerID,
-    c.CustomerName
+    c.CustomerName;
 GO

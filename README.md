@@ -1,171 +1,145 @@
 # Inventory and Order Management System
 
+A SQL Server database for an e-commerce company that stores customers and products, processes multi-product orders with bulk discounts, keeps stock levels up to date, logs every inventory change for auditing, replenishes low-stock products, and reports on orders, stock and customer spending.
 
-## Project Overview: Problem Statement
+### Project Links
 
-
-You are tasked with designing and implementing a database-driven system to manage the inventory and orders for an e-commerce company. The system needs to handle product information, customer data, and order processing efficiently while ensuring that stock levels are properly updated when orders are placed. Additionally, the company wants to track all inventory changes and streamline processes related to stock replenishment.
-
----
-
-## ERD Diagram
-
-![erd diagram showing table relationships](erd_diagram.png)
+| Deliverable              | Link                                          |
+| ------------------------ | --------------------------------------------- |
+| **Project Instructions** | [View Instructions](instructions.md)          |
+| **ERD Diagram**          | [View ERD](erd_diagram.png)                   |
+| **Run Everything**       | [run_all.sql](run_all.sql)                    |
 
 ---
 
 ## Tools and Technologies
 
-The project was implemented using the following tools and technologies:
-
-- **Microsoft SQL Server Express:** Used as the relational database management system to store and manage customers, products, orders, order details, and inventory logs.
-- **SQL Server Management Studio (SSMS):** Used to create and manage the database, execute SQL scripts, implement stored procedures and views, and test the system's functionality.
-- **Transact-SQL (T-SQL):** Used to define the database schema, enforce data integrity, process orders, calculate bulk discounts, update stock levels, record inventory changes, and generate reports.
-- **Visual Studio Code (VS Code):** Used to organize and edit the SQL scripts and project documentation.
-- **Git and GitHub:** Used for version control, tracking changes, and hosting the project repository.
+- **Microsoft SQL Server Express:** relational database storing customers, products, orders, order details and inventory logs.
+- **SQL Server Management Studio (SSMS):** used to create the database, run the scripts and test the system.
+- **Transact-SQL (T-SQL):** used for the schema, constraints, stored procedures, trigger, views, indexes and reports.
+- **Visual Studio Code (VS Code):** used to organize and edit the SQL scripts and documentation.
+- **Git and GitHub:** version control and hosting.
 
 ---
 
-## Project Structure
-
-The repository is organized into folders to separate database design, sample data, stored procedures, and reporting scripts.
+## Repository Structure
 
 ```text
 SQL-Inventory-Order-Management/
-│
 ├── 01_database_design/
-│   └── 01_create_schema.sql
-│
+│   ├── 01_create_schema.sql
+│   ├── 02_create_indexes.sql
+│   └── 03_log_initial_stock_trigger.sql
 ├── 02_sample_data/
 │   └── 01_insert_sample_data.sql
-│
 ├── 03_stored_procedures/
 │   ├── 01_place_order.sql
 │   ├── 02_test_place_order.sql
 │   ├── 03_replenish_stock.sql
 │   └── 04_test_replenishment.sql
-│
 ├── 04_reporting/
-│   ├── 01_order_summary.sql
-│   ├── 02_low_stock_report.sql
-│   ├── 03_customer_spending_tiers.sql
-│   └── 04_create_views.sql
-│
-├── 05_triggers/
-│   └── 01_log_initial_stock_trigger.sql
-│
+│   ├── 01_create_views.sql
+│   ├── 02_order_summary.sql
+│   ├── 03_low_stock_report.sql
+│   ├── 04_customer_spending_tiers.sql
+│   └── 05_inventory_history.sql
+├── run_all.sql
 ├── erd_diagram.png
+├── instructions.md
 └── README.md
 ```
 
-### Folder and File Descriptions
-
-**`01_database_design/`**
-
-- `01_create_schema.sql`: Creates the database and defines the five tables, their relationships, and data integrity constraints.
-
-**`02_sample_data/`**
-
-- `01_insert_sample_data.sql`: Inserts sample customer, product, and initial inventory data for testing the system.
-
-**`03_stored_procedures/`**
-
-- `01_place_order.sql`: Defines the `PlaceOrder` stored procedure, which validates orders, calculates totals and bulk discounts, deducts stock, and records inventory changes.
-- `02_test_place_order.sql`: Demonstrates and tests the order placement procedure.
-- `03_replenish_stock.sql`: Defines the `ReplenishStock` stored procedure for increasing product stock and recording replenishment activity.
-- `04_test_replenishment.sql`: Tests stock replenishment and verifies the resulting inventory changes.
-
-**`04_reporting/`**
-
-- `01_order_summary.sql`: Retrieves order summaries, including customer names, order dates, totals, and quantities ordered.
-- `02_low_stock_report.sql`: Identifies products whose stock levels have fallen below their reorder levels.
-- `03_customer_spending_tiers.sql`: Calculates customer spending and categorizes customers into Bronze, Silver, and Gold tiers.
-- `04_create_views.sql`: Creates reusable views for order summaries and low-stock products.
-
-**`05_triggers/`**
-
-- `01_log_initial_stock_trigger.sql`: Updates the inventory log after adding product to the stock.
-
-**Root files**
-
-- `erd_diagram.png`: Entity Relationship Diagram (ERD) illustrating the database tables and their relationships.
-- `README.md`: Documents the project objectives, technologies, database design, implementation, and deliverables.
-
-## Project Objectives
-
-### Phase 1: Database Design and Schema Implementation
-
-1. **Create the necessary tables** — Design a database schema to track the following:
-
-   - **Products:** Product ID, name, category, price, stock quantity, and reorder level
-   - **Customers:** Customer ID, name, email, and phone number
-   - **Orders:** Order ID, customer ID, order date, and total amount
-   - **Order Details:** Products ordered, their quantities, and their prices
-   - **Inventory Logs:** All changes made to inventory, including stock adjustments when orders are placed or products are replenished
-
-2. **Enforce data integrity:**
-   - Implement relationships between tables to maintain consistency (e.g., each order should be linked to a valid customer, and order details should correspond to valid products)
+| File | Purpose |
+| ---- | ------- |
+| `01_create_schema.sql` | Creates the database and the five tables with their primary keys, foreign keys and check constraints. Drops existing tables first so it can be re-run. |
+| `02_create_indexes.sql` | Adds indexes on the foreign key columns to keep joins and lookups fast as the data grows. |
+| `03_log_initial_stock_trigger.sql` | Trigger that logs the initial stock of every product when it is inserted. |
+| `01_insert_sample_data.sql` | Inserts 5 sample customers and 8 sample products. |
+| `01_place_order.sql` | `PlaceOrder` procedure: validates the order, calculates the total and bulk discount, saves the order and its items, deducts stock and logs the changes. |
+| `02_test_place_order.sql` | Places a sample order with two products. |
+| `03_replenish_stock.sql` | `ReplenishStock` (one product, chosen quantity) and `ReplenishLowStock` (finds and tops up every low-stock product). |
+| `04_test_replenishment.sql` | Demonstrates both replenishment procedures and shows the inventory log. |
+| `01_create_views.sql` | Views for order summaries, low-stock products, and customer spending tiers. |
+| `02_order_summary.sql` | Order summary per customer. |
+| `03_low_stock_report.sql` | Products below their reorder level, most urgent first. |
+| `04_customer_spending_tiers.sql` | Spending and tier per customer, plus totals per tier. |
+| `05_inventory_history.sql` | Full inventory audit trail, and a check that stock matches the logged changes. |
+| `run_all.sql` | Runs every script above in the correct order. |
 
 ---
 
-### Phase 2: Order Placement and Inventory Management
+## How to Run
 
-1. **Handle order placements efficiently:**
-   - Design a way to process new orders from customers
-   - When an order is placed, deduct the correct quantity from stock and calculate the total order amount
-   - Update order details and track how much stock is being used per order
-   - Ensure the system can handle multiple products in a single order
+**Requirements:** SQL Server (Express edition or higher, version 2016 or later) and SSMS.
 
-2. **Track inventory changes:**
-   - Every time a stock level changes (due to an order or replenishment), record the change in an inventory log table
-   - The log should store: when the change occurred, which product was affected, and how much the stock changed
-   - Ensure a full history of inventory changes is retrievable for auditing purposes
+**Option 1: Run everything at once**
 
----
+1. Open `run_all.sql` in SSMS.
+2. Turn on SQLCMD Mode: **Query** menu → **SQLCMD Mode**.
+3. Change the `ProjectPath` line to the folder where you cloned this repository.
+4. Execute (F5).
 
-### Phase 3: Monitoring and Reporting
+**Option 2: Run the scripts one by one**, in this order:
 
-1. **Create business insights and summaries:**
-   - Display summaries of orders — including order date, total amount, and number of items — per customer
-   - Generate reports identifying products that are low on stock and need replenishment (any product with stock below its reorder point should be flagged)
+1. `01_database_design/` (all three files, in order)
+2. `02_sample_data/01_insert_sample_data.sql`
+3. `03_stored_procedures/01_place_order.sql` and `03_replenish_stock.sql`
+4. `04_reporting/01_create_views.sql`
+5. `03_stored_procedures/02_test_place_order.sql`
+6. `04_reporting/02` to `04` (reports)
+7. `03_stored_procedures/04_test_replenishment.sql`
+8. `04_reporting/05_inventory_history.sql`
 
-2. **Customer insights:**
-   - Categorize customers based on total spending (e.g., Bronze, Silver, Gold tiers) and generate spending reports
-   - Apply bulk discounts based on quantity ordered — if a customer orders in large quantities, apply appropriate discounts
-
----
-
-### Phase 4: Stock Replenishment and Automation
-
-1. **Implement stock replenishment:**
-   - Design a mechanism to replenish stock for products that fall below the reorder point
-   - Ensure the inventory log is updated to reflect all replenishment changes
-
-2. **Automate processes:**
-   - Automate stock level updates after an order is placed
-   - Automate total amount calculation for each order
-   - Automate customer tier categorization based on spending
-   - Minimize manual work while ensuring accuracy in inventory tracking and order management
+> **Note:** `01_create_schema.sql` drops and re-creates all tables, so running it deletes any existing data in the `InventoryOrderManagement` database.
 
 ---
 
-### Phase 5: Advanced Queries and Optimizations
+## Database Design
 
-1. **Create views to simplify data access:**
-   - A view summarizing order information: customer name, order date, total amount, and number of items per order
-   - A view displaying stock information: products that are low on stock and need to be reordered
+![ERD diagram showing table relationships](erd_diagram.png)
 
-2. **Optimize for performance:**
-   - Optimize queries to ensure the system performs efficiently as the number of customers, orders, and products grows
+| Table | Description |
+| ----- | ----------- |
+| **Customers** | Customer name, email (unique) and phone number. |
+| **Products** | Name, category, price, stock quantity and reorder level. |
+| **Orders** | Customer, order date, subtotal, discount, total and status. |
+| **OrderDetails** | The products in each order, with quantity and the unit price at the time of the order. |
+| **InventoryLogs** | Every stock change: product, quantity changed, type of change, date, and the related order (if any). |
+
+Data integrity is enforced with constraints:
+
+- **Foreign keys:** every order belongs to an existing customer, and every order line and log entry refers to an existing product (and order, where relevant).
+- **Check constraints:** prices, stock and amounts can't be negative, the total must equal subtotal minus discount, and log entries must have a valid change type. Order-related log entries must also reference an order.
+- **Composite primary key on `OrderDetails`:** `(OrderID, ProductID)` prevents the same product appearing twice in one order.
 
 ---
 
-## Project Deliverables
+## How the Requirements Are Met
 
-| Deliverable | Description |
-|---|---|
-| Database Schema | SQL scripts used to create tables, along with relationships and constraints |
-| SQL Queries | Queries demonstrating order placement and stock updates, inventory tracking, and customer categorization based on spending |
-| Views | SQL scripts for views summarizing order and product stock information |
-| Replenishment System | Demonstration of how the system identifies low-stock products and replenishes them |
-| Report Summaries | Sample queries showing how to retrieve order summaries and stock insights |
+| Requirement | Implementation |
+| ----------- | -------------- |
+| Process multi-product orders | `PlaceOrder` takes a list of products and quantities as one table-valued parameter (`OrderItemType`). |
+| Deduct stock and calculate totals | `PlaceOrder` checks stock, calculates the subtotal, discount and total, deducts stock and saves the order lines, all in one transaction. If any step fails, nothing is saved. |
+| Bulk discounts | Orders with **5 or more items** in total get a **10% discount**. Both values are procedure parameters with these defaults. |
+| Log every inventory change | Orders (`PlaceOrder`), replenishments (`ReplenishStock`, `ReplenishLowStock`) and new products (trigger) all write to `InventoryLogs`. |
+| Full audit history | `05_inventory_history.sql` lists every change and checks that each product's stock equals the sum of its logged changes. |
+| Order summaries per customer | View `vw_OrderSummary`. |
+| Flag low-stock products | View `vw_LowStockProducts`: any product with stock below its reorder level. |
+| Replenish low-stock products | `ReplenishLowStock` finds every low-stock product and tops it up to twice its reorder level (configurable). |
+| Customer tiers | View `vw_CustomerSpending`: **Gold** (200 or more), **Silver** (100 to 199.99), **Bronze** (below 100). Only completed orders count. |
+| Automation | Stock updates and total calculation happen inside `PlaceOrder`, initial stock logging is handled by a trigger, and tiers are recalculated by the view every time it is queried. |
+| Performance | Indexes on the foreign key columns used by the joins: `Orders(CustomerID)`, `OrderDetails(ProductID)`, `InventoryLogs(ProductID, ChangeDate)` and `InventoryLogs(OrderID)`. |
+
+**Why the customer tier is calculated in a view instead of stored in a column:** a stored tier would have to be updated every time an order is placed, and could fall out of date. The view always calculates it from the current orders, so it is automatically correct.
+
+---
+
+## Example Results
+
+Running `run_all.sql` on the sample data produces:
+
+- **Order:** Alex Morgan orders 2 Wireless Keyboards (\$50 each) and 3 Wireless Mice (\$20 each). That is 5 items, so the bulk discount applies: subtotal \$160.00, discount \$16.00, **total \$144.00**.
+- **Customer tiers:** Alex Morgan is **Silver** (\$144.00). The other customers have no orders yet and are **Bronze**.
+- **Low stock (before replenishment):** USB-C Hub (8 of 10), Mechanical Keyboard (4 of 5), Webcam HD (3 of 5) and Headphones (0 of 10).
+- **Replenishment:** USB-C Hub is topped up manually by 10 units. `ReplenishLowStock` then tops up the remaining three products to twice their reorder level, and the low-stock view becomes empty.
+- **Audit check:** every product shows `OK`, meaning all stock changes were logged.
