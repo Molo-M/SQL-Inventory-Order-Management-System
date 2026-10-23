@@ -1,4 +1,3 @@
-
 USE InventoryOrderManagement;
 GO
 
@@ -6,16 +5,20 @@ GO
 -- 1. Create a type for passing multiple products into an order
 -- =====================================================
 
--- Note: A table type allows me to pass a whole table of rows into a procedure as one parameter, called a 
+-- Note: A table type allows me to pass a whole table of rows into a procedure as one parameter, called a
 -- "table-valued parameter"
-IF TYPE_ID(N'dbo.OrderItemType') IS NULL
-    EXEC('
-        CREATE TYPE dbo.OrderItemType AS TABLE
-        (
-            ProductID INT,
-            Quantity INT
-        );
-    ');
+
+-- A table type can't be changed while a procedure uses it, so drop the procedure
+-- first, then the type, and create both again. This also makes the script re-runnable.
+DROP PROCEDURE IF EXISTS dbo.PlaceOrder;
+DROP TYPE IF EXISTS dbo.OrderItemType;
+GO
+
+CREATE TYPE dbo.OrderItemType AS TABLE
+(
+    ProductID INT NOT NULL PRIMARY KEY,  -- primary key: the same product can't be listed twice in one order
+    Quantity INT NOT NULL
+);
 GO
 
 -- =====================================================
@@ -25,7 +28,7 @@ CREATE OR ALTER PROCEDURE dbo.PlaceOrder
     @CustomerID INT,
     @Items dbo.OrderItemType READONLY,
     @BulkDiscountThreshold INT = 5,    -- minimum number of items a customer must buy to get a discount (default 5)
-    @BulkDiscountRate DECIMAL(5,4) = 0.10 -- Discount (defalut 10%)
+    @BulkDiscountRate DECIMAL(5,4) = 0.10 -- Discount (default 10%)
 AS
 BEGIN
     -- Turn off output messages (inserting the order, inserting order details, updating stock, writing logs)
@@ -47,9 +50,6 @@ BEGIN
     IF @BulkDiscountRate < 0 OR @BulkDiscountRate > 1
         THROW 50003, 'The discount rate must be between 0 and 1.', 1;
 
-    
-
-    
     -- Begin the transaction
     BEGIN TRY
         BEGIN TRANSACTION;
@@ -96,7 +96,7 @@ BEGIN
             SET @DiscountAmount = ROUND(@BulkDiscountRate * @SubtotalAmount, 2);
         ELSE
             SET @DiscountAmount = 0;
-        -- Final ammount after applying discount
+        -- Final amount after applying discount
         SET @TotalAmount = @SubtotalAmount - @DiscountAmount;
 
 
